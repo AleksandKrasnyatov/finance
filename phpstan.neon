@@ -1,0 +1,13 @@
+parameters:
+    level: max
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    excludePaths:
+        - vendor/*
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    treatPhpDocTypesAsCertain: false

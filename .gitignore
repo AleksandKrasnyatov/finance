@@ -1,0 +1,54 @@
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+###< symfony/phpunit-bridge ###
+
+/vendor/
+/var/
+
+/bin/rr
+
+/config/jwt/*.pem
+
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+.DS_Store
+Thumbs.db
+
+/composer.phar
+
+/docker/data/
+
+.php-cs-fixer.cache
+.phpstan.cache
+.phpstan/
+
+/coverage/
+
+/node_modules/
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+# Local environment (secrets)
+/.env

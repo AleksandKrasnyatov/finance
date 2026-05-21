@@ -1,0 +1,8 @@
+artprima_prometheus_metrics:
+    namespace: finance_api
+    storage:
+        url: '%env(REDIS_URL)%'
+    ignored_routes:
+        - prometheus_bundle_prometheus
+        - _wdt
+        - _profiler

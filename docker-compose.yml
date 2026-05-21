@@ -1,0 +1,115 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: finance-php
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - finance
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: finance-worker
+    entrypoint: ["docker-entrypoint.sh"]
+    command: php bin/console messenger:consume async -vv --time-limit=3600
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - finance
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: finance-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-finance}
+      POSTGRES_USER: ${POSTGRES_USER:-finance}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finance}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finance} -d ${POSTGRES_DB:-finance}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - finance
+
+  redis:
+    image: redis:7-alpine
+    container_name: finance-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - finance
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: finance-prometheus
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      php:
+        condition: service_healthy
+    networks:
+      - finance
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: finance-grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - finance
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+networks:
+  finance:
+    driver: bridge
