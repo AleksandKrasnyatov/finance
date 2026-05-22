@@ -90,8 +90,11 @@ jobs:
           APP_ENV: dev
           APP_DEBUG: '1'
 
-      - name: PHP CS Fixer (dry-run)
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+      - name: PHP syntax lint (phplint)
+        run: vendor/bin/phplint
+
+      - name: PHP CodeSniffer (PSR-12)
+        run: vendor/bin/phpcs
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse --memory-limit=1G

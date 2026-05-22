@@ -1,0 +1,11 @@
+path:
+  - bin
+  - config
+  - public
+  - src
+  - tests
+extensions:
+  - php
+exclude:
+  - vendor
+  - var

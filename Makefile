@@ -1,4 +1,4 @@
-.PHONY: help init build up down restart logs shell bash test fix cs-fix stan cs-check migrate jwt-keys cache-clear composer-install rr-binary clean
+.PHONY: help init build up down restart logs shell bash test lint phpcs phpcbf stan migrate jwt-keys cache-clear composer-install rr-binary clean
 
 DOCKER_COMPOSE := docker-compose
 PHP_SERVICE := php
@@ -66,7 +66,7 @@ migration: ## Create a new Doctrine migration
 cache-clear: ## Clear Symfony cache
 	$(RUN) php bin/console cache:clear
 
-test: cs-check stan phpunit ## Run full quality gate (cs-check + phpstan + phpunit)
+test: lint phpcs stan phpunit ## Run full quality gate (phplint + phpcs + phpstan + phpunit)
 
 phpunit: ## Run PHPUnit tests
 	$(RUN) php bin/phpunit
@@ -74,11 +74,14 @@ phpunit: ## Run PHPUnit tests
 stan: ## Run PHPStan static analysis
 	$(RUN) vendor/bin/phpstan analyse --memory-limit=1G
 
-cs-check: ## Run PHP CS Fixer in dry-run mode
-	$(RUN) vendor/bin/php-cs-fixer fix --dry-run --diff
+lint: ## Run PHP syntax linter (phplint)
+	$(RUN) vendor/bin/phplint
 
-fix cs-fix: ## Apply PHP CS Fixer fixes
-	$(RUN) vendor/bin/php-cs-fixer fix
+phpcs: ## Run PHP CodeSniffer (PSR-12)
+	$(RUN) vendor/bin/phpcs
+
+phpcbf: ## Auto-fix PHP CodeSniffer violations where possible
+	$(RUN) vendor/bin/phpcbf
 
 console: ## Run Symfony console (usage: make console CMD="debug:router")
 	$(EXEC) php bin/console $(CMD)
@@ -91,7 +94,7 @@ redis-cli: ## Open Redis CLI
 
 clean: down ## Remove containers, volumes, and caches
 	$(DOCKER_COMPOSE) down -v --remove-orphans
-	rm -rf var/cache var/log .php-cs-fixer.cache .phpunit.cache
+	rm -rf var/cache var/log .phpcs-cache .phpunit.cache
 
 status: ## Show container status
 	$(DOCKER_COMPOSE) ps

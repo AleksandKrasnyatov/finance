@@ -10,7 +10,7 @@ Symfony 7.2 REST API bootstrap for personal finance management. Local developmen
 - **OpenAPI** docs (NelmioApiDocBundle) at `/api/docs`
 - **Prometheus** metrics at `/metrics/prometheus`
 - **Grafana** dashboards (provisioned)
-- **PHPUnit**, **PHPStan** (max level), **PHP CS Fixer** (Symfony rules)
+- **PHPUnit**, **PHPStan** (max level), **phplint**, **PHP CodeSniffer** (PSR-12)
 
 ## Prerequisites
 
@@ -46,8 +46,10 @@ make init        # first-time setup
 make up          # start containers
 make down        # stop containers
 make restart     # restart stack
-make test        # cs-check + phpstan + phpunit
-make fix         # apply PHP CS Fixer
+make test        # phplint + phpcs + phpstan + phpunit
+make lint        # run phplint (PHP syntax)
+make phpcs       # run PHP CodeSniffer (PSR-12)
+make phpcbf      # auto-fix phpcs violations where possible
 make stan        # run PHPStan
 make shell       # bash into PHP container
 make logs        # tail all logs

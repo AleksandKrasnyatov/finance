@@ -34,17 +34,14 @@ Thumbs.db
 /docker/data/
 
 .php-cs-fixer.cache
+.phplint.cache
 .phpstan.cache
 .phpstan/
+.phpcs-cache
 
 /coverage/
 
 /node_modules/
-
-###> friendsofphp/php-cs-fixer ###
-/.php-cs-fixer.php
-/.php-cs-fixer.cache
-###< friendsofphp/php-cs-fixer ###
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem

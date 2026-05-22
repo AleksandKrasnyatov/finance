@@ -26,8 +26,10 @@ make init      # первый запуск: build, composer, JWT, migrate
 make up        # поднять стек
 make down      # остановить
 make restart   # перезапуск
-make test      # cs-check + phpstan + phpunit (полный gate)
-make fix       # PHP CS Fixer
+make test      # phplint + phpcs + phpstan + phpunit (полный gate)
+make lint      # phplint — синтаксис PHP
+make phpcs     # PHP CodeSniffer (PSR-12)
+make phpcbf    # автоисправление phpcs (где возможно)
 make stan      # PHPStan
 make shell     # bash в php-контейнере
 make migrate   # Doctrine migrations
@@ -39,9 +41,10 @@ Composer: `make composer-install` / `make composer-update` (не локальн�
 
 ## Quality gates (обязательно перед PR)
 
-1. `make fix` — PHP CS Fixer (`@Symfony`, `declare_strict_types`, risky rules)
-2. `make stan` — PHPStan **level: max** (`bin/`, `config/`, `public/`, `src/`, `tests/`)
-3. `make test` — всё вместе + PHPUnit
+1. `make lint` — **phplint** (синтаксис PHP; конфиг `.phplint.yml`)
+2. `make phpcs` — **PHP CodeSniffer** PSR-12 (`phpcs.xml.dist`; автофикс: `make phpcbf`)
+3. `make stan` — PHPStan **level: max** (`bin/`, `config/`, `public/`, `src/`, `tests/`)
+4. `make test` — всё вместе + PHPUnit
 
 PR не готов, пока `make test` не проходит.
 
